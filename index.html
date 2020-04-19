@@ -25,7 +25,7 @@
 
                      <div class="col-md-5 center-item">
                         <div class="input-group number-spinner">
-                           <button class="btn btn-default"><i class="fas fa-minus"></i></button>
+                           <button id="decrement" class="btn btn-default"><i class="fas fa-minus"></i></button>
                            <input id="quantityOne" type="text" class="form-control text-center" value="1">
                            <button id="increment" class="btn btn-default"><i class="fas fa-plus"></i></button>
                         </div>
@@ -80,13 +80,23 @@
 
 
 <script>
+
+//Increment Button
 const incrementBtn = document.getElementById ('increment');
 incrementBtn.addEventListener("click", function () {
    const purchaseQuantity = document.getElementById ('quantityOne').value;
    const purchaseQuantityNumber = parseFloat(purchaseQuantity);
-   const totalQuantity = purchaseQuantityNumber + 1
-   document.getElementById ('quantityOne').value = totalQuantity
-     
+   const totalQuantity = purchaseQuantityNumber + 1;
+   document.getElementById ('quantityOne').value = totalQuantity;
+})
+
+//Decrement Button
+const decrementBtn = document.getElementById('decrement');
+decrementBtn.addEventListener("click", function () {
+   const purchaseQuantity = document.getElementById('quantityOne').value;
+   const purchaseQuantityNumber = parseFloat(purchaseQuantity);
+   const totalQuantity = purchaseQuantityNumber - 1;
+   document.getElementById('quantityOne').value = totalQuantity;   
 })
 
 </script>
