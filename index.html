@@ -16,7 +16,7 @@
       <div class="container">
          <div class="cart">
             <div class="col-md-12 col-lg-10 mx-auto">
-               <div class="cart-item">
+               <div class="cart-item" id="phone">
                   <div class="row">
                      <div class="col-md-7 center-item">
                         <img src="images/product-1.png" alt="">
@@ -25,17 +25,17 @@
 
                      <div class="col-md-5 center-item">
                         <div class="input-group number-spinner">
-                           <button id="decrement" class="btn btn-default"><i class="fas fa-minus"></i></button>
-                           <input id="quantityOne" type="text" class="form-control text-center" value="1">
-                           <button id="increment" class="btn btn-default"><i class="fas fa-plus"></i></button>
+                           <button id="phone-decrement" class="btn btn-default"><i class="fas fa-minus"></i></button>
+                           <input readonly id="phone-quantity" type="text" class="form-control text-center" value="1">
+                           <button id="phone-increment" class="btn btn-default"><i class="fas fa-plus"></i></button>
                         </div>
-                        <h5>$1219</h5>
-                        <img src="images/remove.png" alt="" class="remove-item">
+                        <h5> $<span id="phone-price" >1219</span> </h5>
+                        <img class="remove-item" src="images/remove.png" alt="" id="phone-remove">
                      </div>
                   </div>
                </div>
 
-               <div class="cart-item">
+               <div class="cart-item" id="case">
                   <div class="row">
                      <div class="col-md-7 center-item mx-auto">
                         <img src="images/product-2.png" alt="">
@@ -43,13 +43,13 @@
                      </div>
                      <div class="col-md-5 center-item">
                         <div class="input-group number-spinner">
-                           <button class="btn btn-default"><i class="fas fa-minus"></i></button>
-                           <input type="text" class="form-control text-center" value="1">
-                           <button class="btn btn-default"><i class="fas fa-plus"></i></button>
+                           <button id="case-decrement" class="btn btn-default"><i class="fas fa-minus"></i></button>
+                           <input readonly id="case-quantity" type="text" class="form-control text-center" value="1">
+                           <button id="case-increment" class="btn btn-default"><i class="fas fa-plus"></i></button>
 
                         </div>
-                        <h5>$59</h5>
-                        <img src="images/remove.png" alt="" class="remove-item">
+                        <h5>$ <span id="case-price">59</span></h5>
+                        <img class="remove-item" src="images/remove.png" alt="" id="case-remove">
                      </div>
                   </div>
                </div>
@@ -64,9 +64,9 @@
                      </div>
 
                      <div class="col-md-4 status">
-                        <h5>$1,278</h5>
-                        <h5>$0</h5>
-                        <h5>$1,278</h5>
+                        <h5>$ <span id="sub-total"></span></h5>
+                        <h5>$ <span id="tax"></span></h5>
+                        <h5>$ <span id="grand-total"></span></h5>
                      </div>
                   </div>
                </div>
@@ -78,30 +78,90 @@
       </div>
    </section>
 
-
 <script>
+//Item 1 (Phone) increment
+const phoneIncrementBtn = document.getElementById("phone-increment");
+phoneIncrementBtn.addEventListener("click", function(){
+   itemQuantityHandler("phone-quantity", "phone-price" , "increment");
+})      
 
-//Increment Button
-const incrementBtn = document.getElementById ('increment');
-incrementBtn.addEventListener("click", function () {
-   const purchaseQuantity = document.getElementById ('quantityOne').value;
-   const purchaseQuantityNumber = parseFloat(purchaseQuantity);
-   const totalQuantity = purchaseQuantityNumber + 1;
-   document.getElementById ('quantityOne').value = totalQuantity;
+//Item 1 (Phone) decrement
+const phoneDecrementBtn = document.getElementById("phone-decrement");
+phoneDecrementBtn.addEventListener("click", function(){
+   itemQuantityHandler("phone-quantity", "phone-price" , "decrement");
 })
 
-//Decrement Button
-const decrementBtn = document.getElementById('decrement');
-decrementBtn.addEventListener("click", function () {
-   const purchaseQuantity = document.getElementById('quantityOne').value;
-   const purchaseQuantityNumber = parseFloat(purchaseQuantity);
-   const totalQuantity = purchaseQuantityNumber - 1;
-   document.getElementById('quantityOne').value = totalQuantity;   
-})
+//Item 2 (Case) increment
+const caseIncrementBtn = document.getElementById("case-increment");
+caseIncrementBtn.addEventListener("click", function(){
+   itemQuantityHandler("case-quantity", "case-price" , "increment");
+})  
 
+//Item 2 (Case) increment
+const caseDecrementBtn = document.getElementById("case-decrement");
+caseDecrementBtn.addEventListener("click", function(){
+   itemQuantityHandler("case-quantity", "case-price" , "decrement");
+})  
+
+// Remove Button
+const phoneRemoveBtn = document.getElementById('phone-remove');
+phoneRemoveBtn.addEventListener("click", function(){
+   removeItemFromCart("phone", "phone-price");
+   })
+
+const caseRemoveBtn = document.getElementById('case-remove');
+caseRemoveBtn.addEventListener("click", function(){
+   removeItemFromCart("case", "case-price");
+   })
+
+//Item Increment/Decrement Functionality
+function itemQuantityHandler(itemQuantityId, itemPriceId, type){
+   const itemQuantity = document.getElementById(itemQuantityId).value;
+   const newQuantity = type == "increment" ? parseFloat(itemQuantity) + 1 : parseFloat(itemQuantity) - 1
+   const itemPrice = document.getElementById(itemPriceId).innerText;
+   var itemPriceAmount = parseFloat(itemPrice);
+   
+//Containing Original Product price Every time even after changing on dom
+   const itemOriginalPrice = itemPriceAmount / itemQuantity;
+
+// Item Quantity Decrement less than 1 Disabling 
+   if(newQuantity <= 1){
+      document.getElementById(itemQuantityId).value = 1;
+      document.getElementById(itemPriceId).innerText = itemOriginalPrice;
+   }else{
+      document.getElementById(itemQuantityId).value = newQuantity;
+      const updatedPrice =  itemOriginalPrice * newQuantity;
+      document.getElementById(itemPriceId).innerText = updatedPrice;
+   }
+
+// Updating New Total and Subtotal   
+   updateTotal();
+}
+
+//Subtotal Calculation
+function updateTotal(){
+   const priceOfItem1 = document.getElementById("phone-price").innerText;
+   const priceOfItem2 = document.getElementById("case-price").innerText;
+   const subTotal = parseFloat(priceOfItem1) + parseFloat(priceOfItem2);
+   document.getElementById('sub-total').innerText = subTotal;
+   
+
+// Tax Calculation
+const taxAmount = subTotal * 15/100
+document.getElementById("tax").innerText = taxAmount
+
+//Grand Total 
+document.getElementById("grand-total").innerText = subTotal + taxAmount 
+
+};
+//Remove Button Functionality
+function removeItemFromCart(ItemId, itemPriceId){
+   document.getElementById(ItemId).style.display  = "none";
+   document.getElementById(itemPriceId).innerText = 0;
+   updateTotal()
+   }
+updateTotal();
 </script>
-
-
 </body>
 
 </html>
